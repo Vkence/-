@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    姓名: <input id="name" type="text">
+    描述: <input id="description" type="text">
+    <button id="add">新增</button>
+    <table id="list">
+        <thead>
+            <th>序号</th>
+            <th>姓名</th>
+            <th>描述</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+            <!-- <tr>
+                <td>1</td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <input type="text">
+                </td>
+                <td>
+                    <button>修改</button>
+                    <button>删除</button>
+                </td>
+            </tr> -->
+        </tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+
+    <script>
+
+
+        // 查询所有
+        function refresh() {
+            $.ajax({
+                method: 'get',
+                url: 'http://47.98.249.40:1234/todo/list',
+                success(res) {
+                    // 成功
+                    console.log(res.msg);
+                    // 渲染列表
+                    const tbody = $('#list tbody');
+                    // 1. 清空容器
+                    tbody.html('');
+                    // 2. 循环渲染
+                    for (const d of res.data) {
+                        // d: { name: 'zs', description: '123', id: 1 },
+                        const tr = $(`
+                            <tr>
+                                <td>${ d.id }</td>
+                                <td id="name-${ d.id }">${ d.name }</td>
+                                <td id="description-${ d.id }">${ d.description }</td>
+                                <td>
+                                    <button type="edit-btn" data-id="${ d.id }">修改</button>
+                                    <button type="del-btn" data-id="${ d.id }">删除</button>
+                                </td>
+                            </tr>
+                        `);
+
+                        tr.appendTo(tbody);
+                    }
+                },   
+
+                error(err) {
+                // 失败
+                },
+            });
+        }
+
+        refresh();
+
+        // 点击table
+        // 事件委托
+        $('#list').on('click', function (e) {
+            const id = $(e.target).attr('data-id');
+            // 点到父元素时 现场获取最新的e.target
+            switch ($(e.target).attr('type')) {
+
+                // 删除
+                case 'del-btn':
+                    onDelete(id, e.target);
+                    break;
+
+                // 修改
+                case 'edit-btn':
+                    onEdit(id, e.target);
+                    break;
+
+                // 修改确认
+                case 'edit-ok-btn':
+                    onEditOk(id);
+                    break;
+
+                default:
+                    break;
+            }
+
+        });
+
+
+    </script>
+</body>
+</html>
