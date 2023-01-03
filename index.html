@@ -39,6 +39,48 @@
 
     <script>
 
+        // 修改
+        function onEdit(id, btn) { // btn: 原生的修改按钮
+            function changeToInput(name) {
+                const el = $(`#${ name }-${ id }`);
+                const content = el.text(); // 'zhangsan'
+                el.html('');
+                const input = $(`<input id="${ name }-inp-${ id }" value="${ content }" type="text">`); // 返显
+                input.appendTo(el);
+            }
+
+            changeToInput('name');
+            changeToInput('description');
+
+            // 把修改变成确认
+            $(btn)
+                .text('确认')
+                .attr({
+                type: 'edit-ok-btn',
+            });
+        }
+
+        // 修改确认
+        function onEditOk(id) {
+            // 发请求
+            $.ajax({
+                method: 'put',
+                url: 'http://47.98.249.40:1234/todo/' + id,
+                data: {
+                    name: $(`#name-inp-${ id }`).val(),
+                    description: $(`#description-inp-${ id }`).val(),
+                },
+                success(res) {
+                    alert(res.data.msg);
+                    refresh();
+                },   
+
+                error(err) {
+                    alert('修改失败');
+                },
+            });
+        }
+
 
         // 查询所有
         function refresh() {
